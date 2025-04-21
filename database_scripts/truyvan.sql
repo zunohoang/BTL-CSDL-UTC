@@ -12,11 +12,11 @@ SELECT * FROM LoaiPhong
 
 SELECT * 
 FROM SinhVien
-WHERE SinhVien.GioiTinh = 'Nam'
+WHERE SinhVien.GioiTinh = N'Nữ'
 
---2. Liệt kê sinh viên có số điện thoại bắt đầu bằng '09'      :D???
-
-
+--2. Liệt kê các sinh viên ở phòng 102     :D???
+SELECT * FROM SinhVien
+WHERE SinhVien.MaPhong = 'P102'
 
 --3. Liệt kê sinh viên kèm tên phòng ở
 
@@ -81,24 +81,51 @@ SELECT *
 FROM HopDong hd
 WHERE YEAR(hd.NgayKetThuc) = 2025
 
---11. Liệt kê hợp đồng có tổng số tiền lớn hơn 1.000.000
+--11. Liệt kê hợp đồng có tổng số tiền lớn hơn 5.000.000
+SELECT * 
+FROM HopDong
+WHERE GiaTien >= 5000000
+ORDER BY GiaTien DESC
 --12. Chèn một hợp đồng mới cho sinh viên có mã 'SV090'
 --13. Cập nhật tổng số tiền cho các hợp đồng kết thúc năm 2025
---14.	Xóa các hợp đồng đã kết thúc trước năm 2020
+--14. Xóa các hợp đồng đã kết thúc trước năm 2020
 --15. Liệt kê hóa đơn và tên nhân viên lập hóa đơn
---16. Liệt kê hóa đơn và số điện sử dụng
+SELECT * FROM HoaDon HD
+JOIN NhanVien NV on NV.MaNhanVien = HD.MaNhanVien
+
+--16. Liệt kê hóa đơn và số điện sử dụng và tổng tiền điện  trên 800.000
+SELECT MaHoaDon,MaPhong, (ChiSoDienCuoi - ChiSoDienDau) as SoDienSD,(ChiSoDienCuoi - ChiSoDienDau)*DonGiaDien as TongTienDien  FROM HoaDon HD
+WHERE (ChiSoDienCuoi - ChiSoDienDau)*DonGiaDien >= 800000
+
 --17. Tính tổng tiền điện của từng phòng trong tháng 3 năm 2025
---18. Liệt kê các phòng có tổng số điện tiêu thụ trên 100, sắp xếp giảm dần
+SELECT MaHoaDon,MaPhong, (ChiSoDienCuoi - ChiSoDienDau) as SoDienSD,(ChiSoDienCuoi - ChiSoDienDau)*DonGiaDien as TongTienDien  FROM HoaDon HD
+WHERE NgayTao > '2025-03-01' AND NgayTao <= '2025-04-01'
+
+--18. Liệt kê các phòng có tổng số điện tiêu thụ trên 240, sắp xếp giảm dần
+SELECT MaHoaDon,MaPhong, (ChiSoDienCuoi - ChiSoDienDau) as SoDienSD  FROM HoaDon HD
+WHERE (ChiSoDienCuoi - ChiSoDienDau) >= 240
+
 --19. Liệt kê các phòng thuộc tòa A
---20. Liệt kê phòng có sức chứa lớn hơn 4
+SELECT * FROM Phong
+WHERE Phong.MaToa = N'TOA01'
+
 --21. Liệt kê tên phòng và tên loại phòng tương ứng
+SELECT Phong.MaPhong,Phong.TenPhong,LoaiPhong.MaLoaiPhong,LoaiPhong.TenPhong  FROM Phong
+JOIN LoaiPhong on LoaiPhong.MaLoaiPhong = Phong.MaLoaiPhong
+
 --22. Cho biết tổng số lượng phòng của từng loại phòng
+SELECT LoaiPhong.MaLoaiPhong,LoaiPhong.TenPhong,COUNT(LoaiPhong.MaLoaiPhong) as SoLuongPhong  FROM Phong
+JOIN LoaiPhong on LoaiPhong.MaLoaiPhong = Phong.MaLoaiPhong
+GROUP BY LoaiPhong.MaLoaiPhong,LoaiPhong.TenPhong
+
 --23. Liệt kê nhân viên giữ chức Quản lý ký túc xá
+SELECT * FROM NhanVien
+JOIN ViTriLamViec on ViTriLamViec.MaCongViec = NhanVien.MaCongViec
+WHERE NhanVien.MaCongViec = N'CV01'
 
 
 --24. Cập nhật sức chứa cho các loại phòng, với LP01 là phòng 8 người, LP02 là phòng 6 người, 
 -- LP03 là phòng 4 người, LP04 là phòng 3 người, LP05 là phòng 2 người
-
 ALTER TABLE LoaiPhong
 ADD SucChua INT
 
@@ -114,10 +141,33 @@ END
 SELECT * FROM LoaiPhong
 
 --25. Chèn nhân viên mới vào bảng nhân viên
-
+INSERT INTO "NhanVien" ("MaNhanVien", "HoTen", "NgaySinh", "GioiTinh", "SoDienThoai", "MaCongViec") VALUES
+('NV011', N'Nguyễn Văn Minh', N'Nam', '1990-06-15', '0912345678', N'123 Nguyễn Trãi, Hà Nội', N'Nhân viên lễ tân');
 
 --26. Cập nhật chức vụ cho nhân viên có mã NV010 thành Quản lý ký túc xá
+UPDATE NhanVien
+SET MaCongViec = N'CV01'
+WHERE MaNhanVien = 'NV010'
+
 --27. Xóa nhân viên chưa từng lập hóa đơn nào
---28. Liệt kê các cơ sở vật chất trong từng phòng -> dai vl ??
---29. Liệt kê các cơ sở vật chất có số lượng khả dụng nhỏ hơn 5
---30. Liệt kê phòng có tổng số cơ sở vật chất lớn hơn 10
+DELETE FROM NhanVien
+WHERE MaNhanVien NOT IN (
+	SELECT DISTINCT MaNhanVien FROM HopDong
+);
+
+
+--30. Liệt kê phòng có tổng số cơ sở vật chất lớn hơn 20
+SELECT Phong.MaPhong,Phong.TenPhong,LoaiPhong.TenPhong,SUM(SoLuong) as TongCSVC FROM LoaiPhong
+JOIN Phong on Phong.MaLoaiPhong = LoaiPhong.MaLoaiPhong
+JOIN LoaiPhong_CSVC on LoaiPhong.MaLoaiPhong = LoaiPhong_CSVC.MaLoaiPhong
+JOIN LoaiCSVC on LoaiCSVC.MaLoaiCSVC = LoaiPhong_CSVC.MaLoaiCSVC
+GROUP BY Phong.MaPhong,Phong.TenPhong,LoaiPhong.TenPhong
+HAVING SUM(SoLuong) >= 20
+ORDER BY SUM(SoLuong) DESC
+
+--31. Liệt kê phòng có sức chứa lớn hơn 4
+SELECT * FROM Phong
+JOIN LoaiPhong LP on LP.MaLoaiPhong = Phong.MaLoaiPhong
+WHERE SucChua >= 4
+ORDER BY SucChua DESC
+--32.
