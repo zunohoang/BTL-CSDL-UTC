@@ -90,7 +90,6 @@ WHERE YEAR(hd.NgayKetThuc) = 2025
 SELECT *
 FROM HopDong
 WHERE GiaTien >= 5000000
-ORDER BY GiaTien DESC
 --12. Chèn một hợp đồng mới cho sinh viên có mã 'SV090'
 --13. Cập nhật tổng số tiền cho các hợp đồng kết thúc năm 2025
 --14. Xóa các hợp đồng đã kết thúc trước năm 2020
@@ -108,19 +107,19 @@ WHERE (ChiSoDienCuoi - ChiSoDienDau)*DonGiaDien >= 800000
 -- WHERE NgayTao > '2025-03-01' AND NgayTao <= '2025-04-01'
 -- nen dung between de toi uu neu ma danh index
 SELECT MaHoaDon,MaPhong, (ChiSoDienCuoi - ChiSoDienDau) as SoDienSD,(ChiSoDienCuoi - ChiSoDienDau)*DonGiaDien as TongTienDien  FROM HoaDon HD
-WHERE NgayTao BETWEEN '2025-03-01' AND '2025-04-01'
+WHERE MONTH(NgayTao) -1;
 
 --18. Liệt kê các phòng có tổng số điện tiêu thụ trên 240, sắp xếp giảm dần
 SELECT MaHoaDon,MaPhong, (ChiSoDienCuoi - ChiSoDienDau) as SoDienSD  FROM HoaDon HD
-WHERE (ChiSoDienCuoi - ChiSoDienDau) >= 240
+WHERE (ChiSoDienCuoi - ChiSoDienDau) > 240
 
---19. Liệt kê các phòng thuộc tòa A
+--19. Liệt kê các phòng thuộc tòa TOA01
 SELECT * FROM Phong
 WHERE Phong.MaToa = N'TOA01'
 
 --21. Liệt kê tên phòng và tên loại phòng tương ứng
-SELECT Phong.MaPhong,Phong.TenPhong,LoaiPhong.MaLoaiPhong,LoaiPhong.TenPhong  FROM Phong
-                                                                                       JOIN LoaiPhong on LoaiPhong.MaLoaiPhong = Phong.MaLoaiPhong
+SELECT Phong.TenPhong,LoaiPhong.TenPhong as TenLoaiPhong  FROM Phong
+JOIN LoaiPhong on LoaiPhong.MaLoaiPhong = Phong.MaLoaiPhong
 
 --22. Cho biết tổng số lượng phòng của từng loại phòng
 
@@ -136,7 +135,7 @@ GROUP BY lp.MaLoaiPhong,lp.TenPhong
 
 --23. Liệt kê nhân viên giữ chức Quản lý ký túc xá
 SELECT * FROM NhanVien
-                  JOIN ViTriLamViec on ViTriLamViec.MaCongViec = NhanVien.MaCongViec
+JOIN ViTriLamViec on ViTriLamViec.MaCongViec = NhanVien.MaCongViec
 WHERE NhanVien.MaCongViec = N'CV01'
 
 
@@ -168,7 +167,7 @@ WHERE MaNhanVien = 'NV010'
 --27. Xóa nhân viên chưa từng lập hóa đơn nào
 DELETE FROM NhanVien
 WHERE MaNhanVien NOT IN (
-    SELECT DISTINCT MaNhanVien FROM HopDong
+    SELECT DISTINCT MaNhanVien FROM HoaDon
 );
 
 
