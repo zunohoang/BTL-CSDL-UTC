@@ -135,7 +135,6 @@ GROUP BY lp.MaLoaiPhong,lp.TenPhong
 
 --23. Liệt kê nhân viên giữ chức Quản lý ký túc xá
 SELECT * FROM NhanVien
-JOIN ViTriLamViec on ViTriLamViec.MaCongViec = NhanVien.MaCongViec
 WHERE NhanVien.MaCongViec = N'CV01'
 
 
@@ -177,8 +176,7 @@ SELECT Phong.MaPhong,Phong.TenPhong,LoaiPhong.TenPhong,SUM(SoLuong) as TongCSVC 
                                                                                          JOIN LoaiPhong_CSVC on LoaiPhong.MaLoaiPhong = LoaiPhong_CSVC.MaLoaiPhong
                                                                                          JOIN LoaiCSVC on LoaiCSVC.MaLoaiCSVC = LoaiPhong_CSVC.MaLoaiCSVC
 GROUP BY Phong.MaPhong,Phong.TenPhong,LoaiPhong.TenPhong
-HAVING SUM(SoLuong) >= 20
-ORDER BY SUM(SoLuong) DESC
+HAVING SUM(SoLuong) > 20
 
 --31. Liệt kê phòng có sức chứa lớn hơn 4
 SELECT * FROM Phong
